@@ -68,9 +68,10 @@ struct TokenStream {
 		Node * temp = new Node();
 		temp = head;
 		while(temp != nullptr) {
-			std::cout << temp->tok->kind << "\n";
+			std::cout << temp->tok->sym->str << "x";
 			temp = temp->next;
 		}
+		std::cout << "\n";
 	}
 };
 

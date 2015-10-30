@@ -7,7 +7,8 @@
 #include "ast.hpp"
 #include "token.hpp"
 #include <stdlib.h>
-#include <cstdlib>
+
+int stringToInt(std::string);
 
 class Parser {
 

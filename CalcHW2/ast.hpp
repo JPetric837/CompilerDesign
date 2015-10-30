@@ -26,6 +26,8 @@ struct Unequal;
 struct And;
 struct Or;
 struct Not;
+
+struct Value;
 struct Visitor;
 struct TypeVisitor;
 struct TypeCheck;
@@ -36,6 +38,31 @@ int Check_Unary(int);
 int Check_Equality(int, int);
 int Check_Logical(int, int);
 int Check_LogicalNot(int);
+
+Value * eval_add(Value*, Value*);
+Value * eval_sub(Value*, Value*);
+Value * eval_mult(Value*, Value*);
+Value * eval_div(Value*, Value*);
+Value * eval_mod(Value*, Value*);
+Value * eval_positive(Value*);
+Value * eval_negative(Value*);
+Value * eval_equal(Value*, Value*);
+Value * eval_unequal(Value*, Value*);
+Value * eval_less(Value*, Value*);
+Value * eval_lessEq(Value*, Value*);
+Value * eval_greater(Value*, Value*);
+Value * eval_greaterEq(Value*, Value*);
+Value * eval_and(Value*, Value*);
+Value * eval_or(Value*, Value*);
+Value * eval_not(Value*);
+
+struct Value {
+	Value(int, int);
+	Value(bool, int);
+	int integer;
+	bool boolean;
+	int type;
+};
 
 
 struct TypeVisitor{
@@ -61,32 +88,31 @@ struct TypeVisitor{
 
 
 struct Visitor{
-	virtual int  visit(IntLiteral const * e) = 0;
-	virtual bool visit(BoolLiteral const * e) = 0;
-	virtual int  visit(Add const * e) = 0;
-	virtual int  visit(Sub const * e) = 0;
-	virtual int  visit(Mult const * e) = 0;
-	virtual int  visit(Div const * e) = 0;
-	virtual int  visit(Mod const * e) = 0;
-	virtual int  visit(Positive const * e) = 0;
-	virtual int  visit(Negative const * e) = 0;
-	virtual bool visit(Equal const * e) = 0;
-	virtual bool visit(Unequal const * e) = 0;
-	virtual bool visit(Less const * e) = 0;
-	virtual bool visit(LessEqual const * e) = 0;
-	virtual bool visit(Greater const * e) = 0;
-	virtual bool visit(GreaterEqual const * e) = 0;
-	virtual bool visit(And const * e) = 0;
-	virtual bool visit(Or const * e) = 0;
-	virtual bool visit(Not const * e) = 0;
+	virtual Value * visit(IntLiteral const * e) = 0;
+	virtual Value * visit(BoolLiteral const * e) = 0;
+	virtual Value * visit(Add const * e) = 0;
+	virtual Value * visit(Sub const * e) = 0;
+	virtual Value * visit(Mult const * e) = 0;
+	virtual Value * visit(Div const * e) = 0;
+	virtual Value * visit(Mod const * e) = 0;
+	virtual Value * visit(Positive const * e) = 0;
+	virtual Value * visit(Negative const * e) = 0;
+	virtual Value * visit(Equal const * e) = 0;
+	virtual Value * visit(Unequal const * e) = 0;
+	virtual Value * visit(Less const * e) = 0;
+	virtual Value * visit(LessEqual const * e) = 0;
+	virtual Value * visit(Greater const * e) = 0;
+	virtual Value * visit(GreaterEqual const * e) = 0;
+	virtual Value * visit(And const * e) = 0;
+	virtual Value * visit(Or const * e) = 0;
+	virtual Value * visit(Not const * e) = 0;
 };
 
 
 // Expression is a base class of which all syntax is derived from
 struct Expr {
 	virtual ~Expr() {}
-	virtual int  accept(Visitor &v) const = 0;
-	virtual bool accept(Visitor &v) const = 0;
+	virtual Value * accept(Visitor &v) const = 0;
 	virtual int accept(TypeVisitor &v) const = 0;
 };
 
@@ -95,7 +121,7 @@ struct Expr {
 struct IntLiteral : Expr {
 	IntLiteral(int n) : val(n) {}
 	int val;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -103,14 +129,14 @@ struct IntLiteral : Expr {
 struct Positive : Expr {
 	Positive(Expr * e1) : num(e1) {}
 	Expr * num;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
 struct Negative : Expr {
 	Negative(Expr * e1) : num(e1) {}
 	Expr * num;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -120,7 +146,7 @@ struct Add : Expr {
 	Add(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -130,7 +156,7 @@ struct Sub : Expr {
 	Sub(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -140,7 +166,7 @@ struct Mult : Expr {
 	Mult(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -150,7 +176,7 @@ struct Div : Expr {
 	Div(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -160,7 +186,7 @@ struct Mod : Expr {
 	Mod(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	int accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -168,7 +194,7 @@ struct Mod : Expr {
 struct BoolLiteral : Expr {
 	BoolLiteral(bool n) : val(n) {}
 	const bool val;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -177,7 +203,7 @@ struct Greater : Expr {
 	Greater(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -186,7 +212,7 @@ struct Less : Expr {
 	Less(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -195,7 +221,7 @@ struct GreaterEqual : Expr {
 	GreaterEqual(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -204,7 +230,7 @@ struct LessEqual : Expr {
 	LessEqual(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -213,7 +239,7 @@ struct Equal : Expr {
 	Equal(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -222,7 +248,7 @@ struct Unequal : Expr {
 	Unequal(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -231,7 +257,7 @@ struct And : Expr {
 	And(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -240,7 +266,7 @@ struct Or : Expr {
 	Or(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
 	Expr * right;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -248,7 +274,7 @@ struct Or : Expr {
 struct Not : Expr {
 	Not(Expr * e1) : val(e1) {}
 	Expr * val;
-	bool accept(Visitor &v) const {return v.visit(this);}
+	Value * accept(Visitor &v) const {return v.visit(this);}
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
@@ -289,24 +315,24 @@ struct TypeCheck : TypeVisitor {
 
 struct Eval : Visitor {
 
-	int  visit(IntLiteral const * e) 	{ return e->val; }
-	bool visit(BoolLiteral const * e)   { return e->val; }
-	int  visit(Add const * e)   		{ return eval_add(e->left->accept(*this), e->right->accept(*this)); }
-	int  visit(Sub const * e)   		{ return eval_sub(e->left->accept(*this), e->right->accept(*this)); }
-	int  visit(Mult const * e)  		{ return eval_mult(e->left->accept(*this), e->right->accept(*this)); }
-	int  visit(Div const * e)   		{ return eval_div(e->left->accept(*this), e->right->accept(*this)); }
-	int  visit(Mod const * e)   		{ return eval_mod(e->left->accept(*this), e->right->accept(*this)); }
-	int  visit(Positive const * e) 		{ return eval_positive(e->num->accept(*this)); }
-	int  visit(Negative const * e) 		{ return eval_negative(e->num->accept(*this)); }
-	bool visit(Less const * e) 			{ return eval_less(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(LessEqual const * e) 	{ return eval_lessEq(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(Greater const * e) 		{ return eval_greater(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(GreaterEqual const * e) 	{ return eval_greaterEq(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(Equal const * e) 		{ return eval_equal(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(Unequal const * e) 		{ return eval_unequal(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(And const * e) 			{ return eval_and(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(Or const * e) 			{ return eval_or(e->left->accept(*this), e->right->accept(*this)); }
-	bool visit(Not const * e) 			{ return eval_not(e->val->accept(*this)); }
+	Value * visit(IntLiteral const * e) 	{ return new Value(e->val, t_integer); }
+	Value * visit(BoolLiteral const * e)   	{ return new Value(e->val, t_bool); }
+	Value * visit(Add const * e)   			{ return eval_add(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Sub const * e)   			{ return eval_sub(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Mult const * e)  			{ return eval_mult(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Div const * e)   			{ return eval_div(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Mod const * e)   			{ return eval_mod(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Positive const * e) 		{ return eval_positive(e->num->accept(*this)); }
+	Value * visit(Negative const * e) 		{ return eval_negative(e->num->accept(*this)); }
+	Value * visit(Less const * e) 			{ return eval_less(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(LessEqual const * e) 		{ return eval_lessEq(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Greater const * e) 		{ return eval_greater(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(GreaterEqual const * e) 	{ return eval_greaterEq(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Equal const * e) 			{ return eval_equal(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Unequal const * e) 		{ return eval_unequal(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(And const * e) 			{ return eval_and(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Or const * e) 			{ return eval_or(e->left->accept(*this), e->right->accept(*this)); }
+	Value * visit(Not const * e) 			{ return eval_not(e->val->accept(*this)); }
 };
 
 

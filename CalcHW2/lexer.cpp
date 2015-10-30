@@ -44,7 +44,6 @@ TokenStream * Lexer::scan(std::string line) {
 	// Add termination character to end of the line
 	line += "\0";
 	input = line;
-	std::cout << input << "\n";
 	ts = new TokenStream();
 	index = 0;
 	bool exitloop = false;
@@ -228,7 +227,8 @@ Token * Lexer::not_tok() {
 }
 
 Token * Lexer::integer_tok() {
-	std::string number = "" + input.at(index);
+	std::string number = "";
+	number += input.at(index);
 
 	while(isdigit(peek(1))) {
 		index++;

@@ -176,14 +176,17 @@ Expr * Parser::unary() {
 
 Expr * Parser::primary() {
 	if(match(t_bool)) {
-		next();
-		if(index->tok->sym->str == "true")
+		if(index->tok->sym->str == "true") {
+			next();
 			return new BoolLiteral(true);
-		else
+		}
+		else {
+			next();
 			return new BoolLiteral(false);
+		}
 	}
 	else if(match(t_integer)) {
-		int x = strtol(index->tok->sym->str.c_str(), 0, 10);
+		int x = stringToInt(index->tok->sym->str);
 		next();
 		return new IntLiteral(x);
 	}
@@ -192,9 +195,22 @@ Expr * Parser::primary() {
 		Expr * e = expression();
 		if(!match(t_rparen))
 			throw std::runtime_error("Closing parenthese missing");
+		next();
 		return e;
 	}
 	else
 		throw std::runtime_error("Expected a literal");
 
+}
+
+
+int stringToInt(std::string s) {
+	int literal = 0;
+	int multiplier = 1;
+	for(int i=s.length()-1; i >= 0; i--) {
+		literal += (s.at(i) - 48) * multiplier;
+		multiplier *= 10;
+	}
+
+	return literal;
 }

@@ -64,73 +64,83 @@ int Check_LogicalNot(int type1) {
 
 
 
+// Structure to hold values during evaluation
+Value::Value(int x, int t) : integer(x), type(t) {}
+
+Value::Value(bool b, int t) : boolean(b), type(t) {}
+
+
 /******************************  Evaluation  ***********************************/
 
-int eval_add(int left, int right) {
-	return (left + right);
+Value * eval_add(Value * left, Value * right) {
+	return new Value(left->integer + right->integer, t_integer);
 }
 
-int eval_sub(int left, int right) {
-	return (left - right);
+Value * eval_sub(Value * left, Value * right) {
+	return new Value(left->integer - right->integer, t_integer);
 }
 
-int eval_mult(int left, int right) {
-	return (left * right);
+Value * eval_mult(Value * left, Value * right) {
+	return new Value(left->integer * right->integer, t_integer);
 }
 
-int eval_div(int left, int right) {
+Value * eval_div(Value * left, Value * right) {
 	if(right != 0)
-		return (left / right);
+		return new Value(left->integer / right->integer, t_integer);
 	else
 		throw std::runtime_error("Cannot divide by zero");
 }
 
-int eval_mod(int left, int right) {
-	return (left % right);
+Value * eval_mod(Value * left, Value * right) {
+	return new Value(left->integer % right->integer, t_integer);
 }
 
-int eval_positive(int num) {
-	return num;
+Value * eval_positive(Value * num) {
+	return new Value(num->integer, t_integer);
 }
 
-int eval_negative(int num) {
-	return (num * -1);
+Value * eval_negative(Value * num) {
+	return new Value(num->integer * -1, t_integer);
 }
 
-bool eval_less(int left, int right) {
-	return (left < right);
+Value * eval_less(Value * left, Value * right) {
+	return new Value(left->integer < right->integer, t_bool);
 }
 
-bool eval_lessEq(int left, int right) {
-	return (left <= right);
+Value * eval_lessEq(Value * left, Value * right) {
+	return new Value(left->integer <= right->integer, t_bool);
 }
 
-bool eval_greater(int left, int right) {
-	return (left > right);
+Value * eval_greater(Value * left, Value * right) {
+	return new Value(left->integer > right->integer, t_bool);
 }
 
-bool eval_greaterEq(int left, int right) {
-	return (left >= right);
+Value * eval_greaterEq(Value * left, Value * right) {
+	return new Value(left->integer >= right->integer, t_bool);
 }
 
-template<class T>
-bool eval_equal(T left, T right) {
-	return (left == right);
+Value * eval_equal(Value * left, Value * right) {
+	if(left->type == t_integer)
+		return new Value(left->integer == right->integer, t_integer);
+	if(left->type == t_bool)
+		return new Value(left->boolean == right->boolean, t_bool);
 }
 
-template<class T>
-bool eval_unequal(T left, T right) {
-	return (left != right);
+Value * eval_unequal(Value * left, Value * right) {
+	if(left->type == t_integer)
+		return new Value(left->integer != right->integer, t_integer);
+	if(left->type == t_bool)
+		return new Value(left->boolean != right->boolean, t_bool);
 }
 
-bool eval_and(bool left, bool right) {
-	return (left && right);
+Value * eval_and(Value * left, Value * right) {
+	return new Value(left->boolean && right->boolean, t_bool);
 }
 
-bool eval_or(bool left, bool right) {
-	return (left || right);
+Value * eval_or(Value * left, Value * right) {
+	return new Value(left->boolean || right->boolean, t_bool);
 }
 
-bool eval_not(bool b) {
-	return (!b);
+Value * eval_not(Value * b) {
+	return new Value(!b->boolean, t_bool);
 }
