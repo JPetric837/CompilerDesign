@@ -65,6 +65,7 @@ int Check_LogicalNot(int type1) {
 
 
 // Structure to hold values during evaluation
+// Uses type variable to read the value as integer or boolean
 Value::Value(int x, int t) : integer(x), type(t) {}
 
 Value::Value(bool b, int t) : boolean(b), type(t) {}

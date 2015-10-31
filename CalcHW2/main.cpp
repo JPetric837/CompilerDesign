@@ -10,10 +10,10 @@ int main(int argc, char **argv) {
 	Lexer * l = new Lexer();
 	TokenStream * ts = new TokenStream();
 	Parser * p = new Parser();
-	Expr * e;
+	Expr * e = nullptr;
 	TypeCheck tc;
 	Eval eval;
-	Value * v;
+	Value * v = nullptr;
 
 	std::string line;
 	std::cout << "Evaluate >>";
@@ -35,11 +35,11 @@ int main(int argc, char **argv) {
 
 		// If final result is integer
 		if(v->type == t_integer)
-			std::cout << v->integer << "\n";
+			std::cout << v->integer << "\n\n";
 		// If final result is bool
 		else if(v->type == t_bool) {
 			std::cout << std::boolalpha;
-			std::cout << v->boolean << "\n";
+			std::cout << v->boolean << "\n\n";
 		}
 
 	}

@@ -7,6 +7,7 @@
 #include <iostream>
 #include "token.hpp"
 
+// AST Nodes
 struct Expr;
 struct Positive;
 struct Negative;
@@ -27,11 +28,14 @@ struct And;
 struct Or;
 struct Not;
 
+// Struct to represent either an integer or boolean value
 struct Value;
+// Visitor pattern used for evaluation
 struct Visitor;
+// Visitor pattern used for type checking
 struct TypeVisitor;
-struct TypeCheck;
 
+// Type checking functions
 int Check_BinaryArithmetic(int, int);
 int Check_Ordering(int, int);
 int Check_Unary(int);
@@ -39,6 +43,7 @@ int Check_Equality(int, int);
 int Check_Logical(int, int);
 int Check_LogicalNot(int);
 
+// Evaluation functions
 Value * eval_add(Value*, Value*);
 Value * eval_sub(Value*, Value*);
 Value * eval_mult(Value*, Value*);
@@ -117,7 +122,7 @@ struct Expr {
 };
 
 
-// Digit represents single digit numbers from 0 - 9
+// Integer literal represents numbers between -2^32 and 2^32
 struct IntLiteral : Expr {
 	IntLiteral(int n) : val(n) {}
 	int val;
@@ -126,6 +131,7 @@ struct IntLiteral : Expr {
 };
 
 
+// Assigns positive sign to integers
 struct Positive : Expr {
 	Positive(Expr * e1) : num(e1) {}
 	Expr * num;
@@ -133,6 +139,8 @@ struct Positive : Expr {
 	int accept(TypeVisitor &v) const {return v.visit(this);}
 };
 
+
+// Assigns negative sign to integers
 struct Negative : Expr {
 	Negative(Expr * e1) : num(e1) {}
 	Expr * num;
@@ -141,7 +149,7 @@ struct Negative : Expr {
 };
 
 
-// Add represents addition of two expressions
+// Represents addition of two expressions
 struct Add : Expr {
 	Add(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -151,7 +159,7 @@ struct Add : Expr {
 };
 
 
-// Sub represents subtraction of two expressions
+// Represents subtraction of two expressions
 struct Sub : Expr {
 	Sub(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -161,7 +169,7 @@ struct Sub : Expr {
 };
 
 
-// Mult represents multiplication of two expressions
+// Represents multiplication of two expressions
 struct Mult : Expr {
 	Mult(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -171,7 +179,7 @@ struct Mult : Expr {
 };
 
 
-// Div represents division of two expressions
+// Represents division of two expressions
 struct Div : Expr {
 	Div(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -181,7 +189,7 @@ struct Div : Expr {
 };
 
 
-// Mod represents modulus of two expressions
+// Represents modulus of two expressions
 struct Mod : Expr {
 	Mod(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -191,6 +199,7 @@ struct Mod : Expr {
 };
 
 
+// Represents boolean values
 struct BoolLiteral : Expr {
 	BoolLiteral(bool n) : val(n) {}
 	const bool val;
@@ -199,6 +208,7 @@ struct BoolLiteral : Expr {
 };
 
 
+// Represents greater than operation
 struct Greater : Expr {
 	Greater(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -208,6 +218,7 @@ struct Greater : Expr {
 };
 
 
+// Represents less than operation
 struct Less : Expr {
 	Less(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -217,6 +228,7 @@ struct Less : Expr {
 };
 
 
+// Represents greater than or equal operation
 struct GreaterEqual : Expr {
 	GreaterEqual(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -226,6 +238,7 @@ struct GreaterEqual : Expr {
 };
 
 
+// Represents less than or equal operation
 struct LessEqual : Expr {
 	LessEqual(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -235,6 +248,7 @@ struct LessEqual : Expr {
 };
 
 
+// Represents equality operation
 struct Equal : Expr {
 	Equal(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -244,6 +258,7 @@ struct Equal : Expr {
 };
 
 
+// Represents unequality operation
 struct Unequal : Expr {
 	Unequal(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -253,6 +268,7 @@ struct Unequal : Expr {
 };
 
 
+// Represents AND operation
 struct And : Expr {
 	And(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -262,6 +278,7 @@ struct And : Expr {
 };
 
 
+// Represents OR operation
 struct Or : Expr {
 	Or(Expr * e1, Expr * e2) : left(e1), right(e2) {}
 	Expr * left;
@@ -271,6 +288,7 @@ struct Or : Expr {
 };
 
 
+// Represents NOT operation
 struct Not : Expr {
 	Not(Expr * e1) : val(e1) {}
 	Expr * val;

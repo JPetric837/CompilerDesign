@@ -7,6 +7,8 @@
 #include "symbol.hpp"
 #include <iostream>
 
+
+// Used to keep track of token types
 enum Token_kind
 {
 	t_integer,

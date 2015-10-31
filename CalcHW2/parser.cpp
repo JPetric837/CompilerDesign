@@ -1,16 +1,16 @@
 // Parser
 // Joseph Petric
 
-#include "Parser.hpp"
+#include "parser.hpp"
 
 
+// Moves index to the next token
 void Parser::next() {
-
 	if(index->next)
 		index = index->next;
-
 }
 
+// Tests index token with given token type
 bool Parser::match(int testkind) {
 	return (index->tok->kind == testkind);
 }
@@ -19,15 +19,17 @@ bool Parser::match(int testkind) {
 Expr * Parser::parse(TokenStream * ts) {
 	index = ts->head;
 
-	if(index) {
+	if(index)
 		return expression();
-	}
+	else
+		return nullptr;
 }
 
 Expr * Parser::expression() {
 	return logical_or();
 }
 
+// Parses ||
 Expr * Parser::logical_or() {
 	Expr * e1 = logical_and();
 	while(true) {
@@ -43,6 +45,7 @@ Expr * Parser::logical_or() {
 	return e1;
 }
 
+// Parses &&
 Expr * Parser::logical_and() {
 	Expr * e1 = equality();
 	while(true) {
@@ -58,6 +61,7 @@ Expr * Parser::logical_and() {
 	return e1;
 }
 
+// Parses == and !=
 Expr * Parser::equality() {
 	Expr * e1 = ordering();
 	while(true) {
@@ -78,6 +82,7 @@ Expr * Parser::equality() {
 	return e1;
 }
 
+// Parses <, <=, >, and >=
 Expr * Parser::ordering() {
 	Expr * e1 = additive();
 	while(true) {
@@ -108,6 +113,7 @@ Expr * Parser::ordering() {
 	return e1;
 }
 
+// Parses + and -
 Expr * Parser::additive() {
 	Expr * e1 = multiplicative();
 	while(true) {
@@ -128,6 +134,7 @@ Expr * Parser::additive() {
 	return e1;
 }
 
+// Parses *, /, and %
 Expr * Parser::multiplicative() {
 	Expr * e1 = unary();
 	while(true) {
@@ -153,6 +160,7 @@ Expr * Parser::multiplicative() {
 	return e1;
 }
 
+// Parses integers signs
 Expr * Parser::unary() {
 	if(match(t_plus)) {
 		next();
@@ -174,6 +182,7 @@ Expr * Parser::unary() {
 	}
 }
 
+// Parses integers, boolean values, and parentheses
 Expr * Parser::primary() {
 	if(match(t_bool)) {
 		if(index->tok->sym->str == "true") {
@@ -204,6 +213,7 @@ Expr * Parser::primary() {
 }
 
 
+// Used to turn integer symbol string into integer value
 int stringToInt(std::string s) {
 	int literal = 0;
 	int multiplier = 1;

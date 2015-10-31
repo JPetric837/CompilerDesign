@@ -6,6 +6,7 @@
 
 Lexer::Lexer() {
 
+	// Building symbol table
 	symtab.put("+", new Symbol("+", t_plus));
 	symtab.put("-", new Symbol("-", t_minus));
 	symtab.put("*", new Symbol("*", t_mult));
@@ -27,7 +28,7 @@ Lexer::Lexer() {
 
 }
 
-// Function used to supply index in error messages
+// Function used in error messages to supply index
 std::string intToString(int);
 
 // Returns character from the input from a specified position ahead of the index
@@ -36,7 +37,6 @@ char Lexer::peek(int i) {
 		return input.at(index + i);
 	else
 		return '\0';
-		//throw std::runtime_error("Invalid keyword at char (" + intToString(index) + ")");
 }
 
 TokenStream * Lexer::scan(std::string line) {
@@ -95,6 +95,9 @@ TokenStream * Lexer::scan(std::string line) {
 }
 
 
+
+// Functions used to create tokens
+// **********************************************************
 Token * Lexer::plus_tok() {
 	Token * tok = new Token(t_plus, symtab.get("+"));
 	index++;
